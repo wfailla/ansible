@@ -139,7 +139,7 @@ def grafana_dashboard_exists(module, grafana_url, slug, headers):
         dashboard_exists = True
         try:
             dashboard = json.loads(r.read())
-        except Exception as e:
+        except ValueError as e:
             raise GrafanaMalformedJson(e)
     elif info['status'] == 404:
         dashboard_exists = False
@@ -152,11 +152,11 @@ def grafana_dashboard_exists(module, grafana_url, slug, headers):
 def grafana_create_dashboard(module, data):
 
     # define data payload for grafana API
-    try:
-        with open(data['path'], 'r') as json_file:
+    with open(data['path'], 'r') as json_file:
+        try:
             payload = json.load(json_file)
-    except Exception as e:
-        raise GrafanaMalformedJson("Can't load json file %s" % str(e))
+        except ValueError as e:
+            raise GrafanaMalformedJson("Can't load json file %s" % str(e))
 
     # define http header
     headers = {'content-type': 'application/json; charset=utf8'}
